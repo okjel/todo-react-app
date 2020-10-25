@@ -2,31 +2,22 @@ import React from 'react';
 import './task-list.css';
 import Task from "../task";
 
-export default function TaskList({ data }) {
-    console.log(data);
-    const todos = data.map( item => {
-        const {editing, completed, ...options} = item;
+export default function TaskList({ state, onDelete, onComplete}) {
 
-        if (editing) {
-            return (
-                <li className="editing">
-                    <Task {...options}/>
-                    <input type="text" className="edit" value="Editing task" />
-                </li>
-            )
+    const todos = state.map( ({id, editing, completed, ...options}) => {
+        let className = "";
+        if(editing){
+            className += " editing";
         }
 
-        if (completed) {
-            return (
-                <li className="completed">
-                    <Task {...options}/>
-                </li>
-            )
+        if(completed){
+            className += " completed";
         }
 
         return (
-            <li>
-                <Task {...options}/>
+            <li className={className} key={id}>
+                <Task {...options} onDelete={() => onDelete(id)} onComplete={() => onComplete(id)}/>
+                {editing && <input type="text" className="edit" defaultValue="Editing task" />}
             </li>
         )
     });
