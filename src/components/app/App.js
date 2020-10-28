@@ -1,5 +1,4 @@
 import React, {Component} from "react";
-import { formatDistanceToNow } from 'date-fns';
 
 import './App.css';
 
@@ -11,13 +10,17 @@ export default class App extends Component {
 
     ids = 0
 
-    createElement = (text, completed = false, editing = false) => {
+    static defaultProps = {
+        filter: "All"
+    }
+
+    createElement = (text, completed = false, isEditing = false) => {
         return {
             id: this.ids++,
             description: text,
-            date: formatDistanceToNow(new Date(2000 + Math.round(Math.random() * 10), 6, 2)),
+            date: new Date(),
             completed,
-            editing,
+            isEditing,
         }
     }
 
@@ -27,11 +30,27 @@ export default class App extends Component {
             this.createElement('Editing task'),
             this.createElement('Active task'),
         ],
-        filtering: 'All'
+        filtering: this.props.filter
     }
 
     onDelete = (id) => {
         this.setState(({todos}) => ({todos: todos.filter(i => i.id !== id)}))
+    }
+
+    onEdit = (id, text) => {
+        this.setState(({todos}) => {
+            return {
+                todos: todos.reduce((a, el) => el.id === id ? [...a, {...el, description: text}] : [...a, el], [])
+            };
+        });
+    }
+
+    toggleEdit = (id) => {
+        this.setState(({todos}) => {
+            return {
+                todos: todos.reduce((a, el) => el.id === id ? [...a, {...el, isEditing: !el.isEditing}] : [...a, el], [])
+            };
+        });
     }
 
     onComplete = (id) => {
@@ -83,9 +102,11 @@ export default class App extends Component {
             <section className="todoapp">
                 <NewTaskForm onAdd={this.onAdd}/>
                 <section className="main">
-                    <TaskList state={todos}
+                    <TaskList todosData={todos}
                               onDelete={this.onDelete}
-                    onComplete={this.onComplete}/>
+                              onComplete={this.onComplete}
+                              onEdit={this.onEdit}
+                              toggleEdit={this.toggleEdit}/>
                     <Footer filtering={this.state.filtering}
                             onFilter={this.onFilter}
                             clearCompleted={this.clearCompleted}
