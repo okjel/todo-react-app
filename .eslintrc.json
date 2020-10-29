@@ -16,7 +16,7 @@
     "max-depth": ["warn", 4],
     "id-length": ["warn", { "exceptions": ["i", "j"], "min": 2 }],
     "no-lonely-if": ["error"],
-    "no-plusplus": ["error", {"allowForLoopAfterthoughts": true}],
+    "no-plusplus": "off",
     "no-restricted-syntax": "off",
     "class-methods-use-this": "off",
     "jsx-a11y/href-no-hash": ["off"],
@@ -34,6 +34,7 @@
     "react": {
       "pragma": "React",
       "version": "detect"
-    }
+    },
+    "import/extensions": ["js", "jsx"]
   }
 }

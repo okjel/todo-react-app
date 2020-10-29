@@ -19,7 +19,7 @@ export default class App extends Component {
   ids = 0;
 
   createElement = (text, completed = false, isEditing = false) => ({
-    id: this.ids + 1,
+    id: this.ids++,
     description: text,
     date: new Date(),
     completed,

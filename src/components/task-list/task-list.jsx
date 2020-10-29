@@ -34,7 +34,7 @@ export default function TaskList({ todosData, onDelete, onComplete, toggleEdit, 
 }
 
 TaskList.propTypes = {
-  todosData: PropTypes.arrayOf.isRequired,
+  todosData: PropTypes.arrayOf(PropTypes.object).isRequired,
   onDelete: PropTypes.func.isRequired,
   onComplete: PropTypes.func.isRequired,
   toggleEdit: PropTypes.func.isRequired,
