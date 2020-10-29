@@ -1,12 +1,12 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
-import "./task.css";
-import { formatDistanceToNow } from "date-fns";
+import './task.css';
+import { formatDistanceToNow } from 'date-fns';
 
 export default class Task extends Component {
   static defaultProps = {
-    description: "task",
+    description: 'task',
     date: new Date(),
     completed: false,
     isEditing: false,
@@ -44,42 +44,23 @@ export default class Task extends Component {
   };
 
   render() {
-    const {
-      date,
-      completed,
-      isEditing,
-      onDelete,
-      onComplete,
-      toggleEdit,
-    } = this.props;
+    const { date, completed, isEditing, onDelete, onComplete, toggleEdit } = this.props;
     return (
       <>
         <div className="view">
-          <input
-            className="toggle"
-            type="checkbox"
-            onChange={onComplete}
-            checked={completed ? "checked" : ""}
-          />
+          <input className="toggle" type="checkbox" onChange={onComplete} checked={completed ? 'checked' : ''} />
           <label>
             <span className="description" onClick={onComplete}>
               {this.state.description}
             </span>
-            <span className="created">
-              {formatDistanceToNow(date, { includeSeconds: true })}
-            </span>
+            <span className="created">{formatDistanceToNow(date, { includeSeconds: true })}</span>
           </label>
           <button className="icon icon-edit" onClick={toggleEdit} />
           <button className="icon icon-destroy" onClick={onDelete} />
         </div>
         {isEditing && (
           <form onSubmit={this.submitChange}>
-            <input
-              type="text"
-              className="edit"
-              onChange={this.onInputChange}
-              value={this.state.description}
-            />
+            <input type="text" className="edit" onChange={this.onInputChange} value={this.state.description} />
           </form>
         )}
       </>

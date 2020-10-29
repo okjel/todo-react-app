@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import "./new-task-form.css";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import './new-task-form.css';
 
 export default class NewTaskForm extends Component {
   static defaultProps = {
@@ -12,7 +12,7 @@ export default class NewTaskForm extends Component {
   };
 
   state = {
-    inputText: "",
+    inputText: '',
   };
 
   onInputChange = (e) => {
@@ -26,7 +26,7 @@ export default class NewTaskForm extends Component {
     if (!this.state.inputText) return;
     this.props.onAdd(this.state.inputText);
     this.setState({
-      inputText: "",
+      inputText: '',
     });
   };
 
