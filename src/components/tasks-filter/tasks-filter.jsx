@@ -5,7 +5,6 @@ import './tasks-filter.css';
 
 export default class TasksFilter extends Component {
   static defaultProps = {
-    onFilter: () => {},
     filtering: 'All',
   };
 
@@ -15,18 +14,22 @@ export default class TasksFilter extends Component {
   };
 
   state = {
-    filters: ['All', 'Active', 'Completed'],
+    filters: [
+      { id: 1, name: 'All' },
+      { id: 2, name: 'Active' },
+      { id: 3, name: 'Completed' },
+    ],
   };
 
-  onClick = (e) => {
-    this.props.onFilter(e.target.textContent);
+  onClick = (evt) => {
+    this.props.onFilter(evt.target.textContent);
   };
 
   render() {
-    const filterElements = this.state.filters.map((item, index) => (
-      <li key={index}>
-        <button className={item === this.props.filtering ? 'selected' : ''} onClick={this.onClick}>
-          {item}
+    const filterElements = this.state.filters.map((item) => (
+      <li key={item.id}>
+        <button type="button" className={item.name === this.props.filtering ? 'selected' : ''} onClick={this.onClick}>
+          {item.name}
         </button>
       </li>
     ));

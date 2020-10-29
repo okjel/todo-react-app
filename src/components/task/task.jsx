@@ -6,40 +6,36 @@ import { formatDistanceToNow } from 'date-fns';
 
 export default class Task extends Component {
   static defaultProps = {
-    description: 'task',
     date: new Date(),
-    completed: false,
     isEditing: false,
-    onDelete: () => {},
-    onComplete: () => {},
     toggleEdit: () => {},
     onEdit: () => {},
   };
 
   static propTypes = {
     description: PropTypes.string.isRequired,
-    date: PropTypes.instanceOf(Date).isRequired,
+    date: PropTypes.instanceOf(Date),
     completed: PropTypes.bool.isRequired,
-    isEditing: PropTypes.bool.isRequired,
+    isEditing: PropTypes.bool,
     onDelete: PropTypes.func.isRequired,
     onComplete: PropTypes.func.isRequired,
-    toggleEdit: PropTypes.func.isRequired,
-    onEdit: PropTypes.func.isRequired,
+    toggleEdit: PropTypes.func,
+    onEdit: PropTypes.func,
   };
 
   state = {
     description: this.props.description,
   };
 
-  submitChange = (e) => {
-    e.preventDefault();
+  submitChange = (evt) => {
+    evt.preventDefault();
     this.props.onEdit(this.state.description);
     this.props.toggleEdit();
   };
 
-  onInputChange = (e) => {
+  onInputChange = (evt) => {
     this.setState({
-      description: e.target.value,
+      description: evt.target.value,
     });
   };
 
@@ -50,13 +46,14 @@ export default class Task extends Component {
         <div className="view">
           <input className="toggle" type="checkbox" onChange={onComplete} checked={completed ? 'checked' : ''} />
           <label>
+            {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
             <span className="description" onClick={onComplete}>
               {this.state.description}
             </span>
             <span className="created">{formatDistanceToNow(date, { includeSeconds: true })}</span>
           </label>
-          <button className="icon icon-edit" onClick={toggleEdit} />
-          <button className="icon icon-destroy" onClick={onDelete} />
+          <button type="button" className="icon icon-edit" onClick={toggleEdit} aria-label="Edit task" />
+          <button type="button" className="icon icon-destroy" onClick={onDelete} aria-label="Delete task" />
         </div>
         {isEditing && (
           <form onSubmit={this.submitChange}>

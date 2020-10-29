@@ -3,10 +3,6 @@ import PropTypes from 'prop-types';
 import './new-task-form.css';
 
 export default class NewTaskForm extends Component {
-  static defaultProps = {
-    onAdd: () => {},
-  };
-
   static propTypes = {
     onAdd: PropTypes.func.isRequired,
   };
@@ -15,14 +11,14 @@ export default class NewTaskForm extends Component {
     inputText: '',
   };
 
-  onInputChange = (e) => {
+  onInputChange = (evt) => {
     this.setState({
-      inputText: e.target.value,
+      inputText: evt.target.value,
     });
   };
 
-  onSubmit = (e) => {
-    e.preventDefault();
+  onSubmit = (evt) => {
+    evt.preventDefault();
     if (!this.state.inputText) return;
     this.props.onAdd(this.state.inputText);
     this.setState({
@@ -38,7 +34,6 @@ export default class NewTaskForm extends Component {
           <input
             className="new-todo"
             placeholder="What needs to be done?"
-            autoFocus
             onChange={this.onInputChange}
             value={this.state.inputText}
           />

@@ -33,16 +33,8 @@ export default function TaskList({ todosData, onDelete, onComplete, toggleEdit, 
   return <ul className="todo-list">{todos}</ul>;
 }
 
-TaskList.defaultProps = {
-  todosData: [],
-  onDelete: () => {},
-  onComplete: () => {},
-  toggleEdit: () => {},
-  onEdit: () => {},
-};
-
 TaskList.propTypes = {
-  todosData: PropTypes.array.isRequired,
+  todosData: PropTypes.arrayOf.isRequired,
   onDelete: PropTypes.func.isRequired,
   onComplete: PropTypes.func.isRequired,
   toggleEdit: PropTypes.func.isRequired,
