@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
 import './task.css';
 import { formatDistanceToNow } from 'date-fns';
 
-export default class Task extends Component {
+export default class Task extends PureComponent {
   static defaultProps = {
     date: new Date(),
     isEditing: false,

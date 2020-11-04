@@ -1,29 +1,21 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import './App.css';
 
 import NewTaskForm from '../new-task-form';
 import TaskList from '../task-list';
 import Footer from '../footer';
+import Filter from '../../shared/filter';
 
 export default class App extends Component {
-  static defaultProps = {
-    filter: 'All',
-  };
-
-  static propTypes = {
-    filter: PropTypes.string,
-  };
-
   ids = 0;
 
-  createElement = (text, completed = false, isEditing = false) => ({
+  createElement = (text) => ({
     id: this.ids++,
     description: text,
     date: new Date(),
-    completed,
-    isEditing,
+    completed: false,
+    isEditing: false,
   });
 
   state = {
@@ -32,7 +24,7 @@ export default class App extends Component {
       this.createElement('Editing task'),
       this.createElement('Active task'),
     ],
-    filtering: this.props.filter,
+    filtering: Filter.all.name,
   };
 
   onDelete = (id) => {
@@ -41,23 +33,20 @@ export default class App extends Component {
 
   onEdit = (id, text) => {
     this.setState(({ todos }) => ({
-      todos: todos.reduce((acc, el) => (el.id === id ? [...acc, { ...el, description: text }] : [...acc, el]), []),
+      todos: todos.map((el) => (el.id === id ? { ...el, description: text } : el)),
     }));
+  };
+
+  toggleProp = (state, nameProp, elId) => {
+    return state.map((el) => (el.id === elId ? { ...el, [nameProp]: !el[nameProp] } : el));
   };
 
   toggleEdit = (id) => {
-    this.setState(({ todos }) => ({
-      todos: todos.reduce(
-        (acc, el) => (el.id === id ? [...acc, { ...el, isEditing: !el.isEditing }] : [...acc, el]),
-        []
-      ),
-    }));
+    this.setState(({ todos }) => ({ todos: this.toggleProp(todos, 'isEditing', id) }));
   };
 
   onComplete = (id) => {
-    this.setState(({ todos }) => ({
-      todos: todos.map((i) => (i.id === id ? { ...i, completed: !i.completed } : i)),
-    }));
+    this.setState(({ todos }) => ({ todos: this.toggleProp(todos, 'completed', id) }));
   };
 
   onAdd = (text) => {
@@ -78,19 +67,20 @@ export default class App extends Component {
     }));
   };
 
-  render() {
-    let todos;
+  isFilter = (filterName) => this.state.filtering === filterName;
 
-    switch (this.state.filtering) {
-      case 'Active':
-        todos = this.state.todos.filter((i) => !i.completed);
-        break;
-      case 'Completed':
-        todos = this.state.todos.filter((i) => i.completed);
-        break;
-      default:
-        todos = this.state.todos;
-    }
+  render() {
+    const todos = this.state.todos.filter((i) => {
+      if (this.isFilter(Filter.active.name)) {
+        return !i.completed;
+      }
+
+      if (this.isFilter(Filter.completed.name)) {
+        return i.completed;
+      }
+
+      return true;
+    });
 
     return (
       <section className="todoapp">
