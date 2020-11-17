@@ -1,11 +1,11 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
+import './todo-list.css';
 import PropTypes from 'prop-types';
+import View from '../view';
 
-import './task-list.css';
-import Task from '../task';
-
-export default function TaskList({ todosData, onDelete, onComplete, toggleEdit, onEdit }) {
-  const todos = todosData.map(({ id, description, date, isEditing, completed }) => {
+function TodoList({ todosData, onDelete, onComplete, toggleEdit, onEdit, startTimer, pauseTimer }) {
+  const todos = todosData.map(({ id, description, date, timer, isEditing, completed }) => {
     let className = '';
     if (isEditing) {
       className += 'editing';
@@ -17,7 +17,8 @@ export default function TaskList({ todosData, onDelete, onComplete, toggleEdit, 
 
     return (
       <li className={className} key={id}>
-        <Task
+        <View
+          timer={timer.time}
           description={description}
           date={date}
           isEditing={isEditing}
@@ -25,15 +26,18 @@ export default function TaskList({ todosData, onDelete, onComplete, toggleEdit, 
           onDelete={() => onDelete(id)}
           onComplete={() => onComplete(id)}
           toggleEdit={() => toggleEdit(id)}
+          startTimer={() => startTimer(id)}
+          pauseTimer={() => pauseTimer(id)}
           onEdit={(text) => onEdit(id, text)}
         />
       </li>
     );
   });
+
   return <ul className="todo-list">{todos}</ul>;
 }
 
-TaskList.propTypes = {
+TodoList.propTypes = {
   todosData: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number,
@@ -41,10 +45,18 @@ TaskList.propTypes = {
       date: PropTypes.instanceOf(Date),
       completed: PropTypes.bool,
       isEditing: PropTypes.bool,
+      timer: PropTypes.shape({
+        time: PropTypes.number,
+        intervalId: PropTypes.oneOfType([PropTypes.number.isRequired, PropTypes.oneOf([null]).isRequired]),
+      }),
     })
   ).isRequired,
   onDelete: PropTypes.func.isRequired,
   onComplete: PropTypes.func.isRequired,
   toggleEdit: PropTypes.func.isRequired,
   onEdit: PropTypes.func.isRequired,
+  startTimer: PropTypes.func.isRequired,
+  pauseTimer: PropTypes.func.isRequired,
 };
+
+export default TodoList;

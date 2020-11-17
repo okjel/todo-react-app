@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-
-import './tasks-filter.css';
 import Filter from '../../shared/filter';
 
-export default class TasksFilter extends Component {
+class Filters extends Component {
   static defaultProps = {
     filtering: Filter.all.name,
   };
@@ -34,3 +32,5 @@ export default class TasksFilter extends Component {
     return <ul className="filters">{filterElements}</ul>;
   }
 }
+
+export default Filters;

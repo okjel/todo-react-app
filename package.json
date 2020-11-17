@@ -66,5 +66,14 @@
       "npm run format",
       "git add"
     ]
-  }
+  },
+  "crcf": [
+    "scss",
+    "proptypes",
+    "notest",
+    "jsx",
+    {
+      "output": "src/components"
+    }
+  ]
 }
