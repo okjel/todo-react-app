@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 
 import './App.css';
 import Filter from '../../shared/filter';
@@ -6,94 +6,76 @@ import Header from '../header';
 import Main from '../main';
 import jsonDate from '../../shared/json-date';
 
-export default class App extends Component {
-  ids = 0;
+export default function App() {
+  let ids = 0;
 
-  createElement = (text, timer = 0) => {
-    const todo = {
-      id: this.ids++,
+  const createElement = (text, timer = 0) => {
+    return {
+      id: ids++,
       description: text,
       date: new Date(),
       completed: false,
       isEditing: false,
       timer: { time: +timer, intervalId: null },
     };
-
-    return todo;
   };
 
-  componentDidMount() {
-    window.addEventListener('storage', this.checkStorage);
-  }
+  const [todoItems, setTodoItems] = useState([
+    createElement('Completed task'),
+    createElement('Editing task'),
+    createElement('Active task'),
+  ]);
 
-  checkStorage = () => {
+  const [filter, setFilter] = useState(Filter.all.name);
+
+  const syncStorage = useCallback(() => {
     const todosData = localStorage.getItem('todosTimers');
-    if (!todosData || JSON.stringify(this.state) === todosData) return;
+    if (!todosData || JSON.stringify(todoItems) === todosData) return;
     jsonDate();
-    this.setState(JSON.parse(todosData, JSON.dateParser));
+    setTodoItems(JSON.parse(todosData, JSON.dateParser));
+  }, [todoItems]);
+
+  useEffect(() => {
+    window.addEventListener('storage', syncStorage);
+    localStorage.setItem('todosTimers', JSON.stringify(todoItems));
+    return () => window.removeEventListener('storage', syncStorage);
+  });
+
+  const onDelete = (id) => {
+    setTodoItems((todos) => [...todos.filter((i) => i.id !== id)]);
   };
 
-  componentDidUpdate() {
-    localStorage.setItem('todosTimers', JSON.stringify(this.state));
-  }
-
-  state = {
-    todos: [
-      this.createElement('Completed task'),
-      this.createElement('Editing task'),
-      this.createElement('Active task'),
-    ],
-    filtering: Filter.all.name,
+  const onEdit = (id, text) => {
+    setTodoItems((todos) => [...todos.map((el) => (el.id === id ? { ...el, description: text } : el))]);
   };
 
-  onDelete = (id) => {
-    // const todo = this.state.todos.find((i) => i.id === id);
-    // if (todo) {
-    //   const interId = todo.timer.intervalId;
-    //   if (interId) this.pauseTimer(id);
-    // }
-    this.setState(({ todos }) => ({ todos: todos.filter((i) => i.id !== id) }));
+  const toggleProp = (nameProp, elId) => {
+    setTodoItems((todos) => [...todos.map((el) => (el.id === elId ? { ...el, [nameProp]: !el[nameProp] } : el))]);
   };
 
-  onEdit = (id, text) => {
-    this.setState(({ todos }) => ({
-      todos: todos.map((el) => (el.id === id ? { ...el, description: text } : el)),
-    }));
+  const toggleEdit = (id) => {
+    toggleProp('isEditing', id);
   };
 
-  toggleProp = (state, nameProp, elId) => {
-    return state.map((el) => (el.id === elId ? { ...el, [nameProp]: !el[nameProp] } : el));
+  const onComplete = (id) => {
+    toggleProp('completed', id);
   };
 
-  toggleEdit = (id) => {
-    this.setState(({ todos }) => ({ todos: this.toggleProp(todos, 'isEditing', id) }));
+  const onAdd = (text, timer) => {
+    setTodoItems((todos) => [...todos, createElement(text, timer)]);
   };
 
-  onComplete = (id) => {
-    this.setState(({ todos }) => ({ todos: this.toggleProp(todos, 'completed', id) }));
+  const onFilter = (text) => {
+    setFilter(text);
   };
 
-  onAdd = (text, timer) => {
-    this.setState(({ todos }) => ({
-      todos: [...todos, this.createElement(text, timer)],
-    }));
+  const clearCompleted = () => {
+    setTodoItems((todos) => [...todos.filter((i) => !i.completed)]);
   };
 
-  onFilter = (text) => {
-    this.setState({
-      filtering: text,
-    });
-  };
-
-  clearCompleted = () => {
-    this.setState(({ todos }) => ({
-      todos: todos.filter((i) => !i.completed),
-    }));
-  };
-
-  minusTimerSec = (id) => {
-    this.setState(({ todos }) => ({
-      todos: todos.map((todo) => {
+  const minusTimerSec = (id) => {
+    setTodoItems((todos) => [
+      ...todos.map((todo) => {
         if (todo.id !== id) return todo;
         if (todo.timer.time < 1) {
           clearInterval(todo.timer.intervalId);
@@ -102,60 +84,60 @@ export default class App extends Component {
 
         return { ...todo, timer: { ...todo.timer, time: todo.timer.time - 1 } };
       }),
-    }));
+    ]);
   };
 
-  startTimer = (id) => {
-    const intervalId = setInterval(() => this.minusTimerSec(id), 1000);
-    this.setState(({ todos }) => ({
-      todos: todos.map((todo) => (todo.id === id ? { ...todo, timer: { ...todo.timer, intervalId } } : todo)),
-    }));
+  const startTimer = (id) => {
+    const curTask = todoItems.find((todo) => todo.id === id);
+    if (!curTask || curTask.timer.intervalId) return;
+    const intervalId = setInterval(() => minusTimerSec(id), 1000);
+    setTodoItems((todos) => [
+      ...todos.map((todo) => (todo.id === id ? { ...todo, timer: { ...todo.timer, intervalId } } : todo)),
+    ]);
   };
 
-  pauseTimer = (id) => {
-    this.setState(({ todos }) => ({
-      todos: todos.map((todo) => {
+  const pauseTimer = (id) => {
+    setTodoItems((todos) => [
+      ...todos.map((todo) => {
         if (todo.id !== id || todo.timer.intervalId === null) {
           return todo;
         }
         clearInterval(todo.timer.intervalId);
         return { ...todo, timer: { ...todo.timer, intervalId: null } };
       }),
-    }));
+    ]);
   };
 
-  isFilter = (filterName) => this.state.filtering === filterName;
+  const isFilter = (filterName) => filter === filterName;
 
-  render() {
-    const todos = this.state.todos.filter((i) => {
-      if (this.isFilter(Filter.active.name)) {
-        return !i.completed;
-      }
+  const todos = todoItems.filter((i) => {
+    if (isFilter(Filter.active.name)) {
+      return !i.completed;
+    }
 
-      if (this.isFilter(Filter.completed.name)) {
-        return i.completed;
-      }
+    if (isFilter(Filter.completed.name)) {
+      return i.completed;
+    }
 
-      return true;
-    });
+    return true;
+  });
 
-    return (
-      <section className="todoapp">
-        <Header onAdd={this.onAdd} />
-        <Main
-          todosData={todos}
-          filtering={this.state.filtering}
-          onDelete={this.onDelete}
-          onComplete={this.onComplete}
-          onEdit={this.onEdit}
-          toggleEdit={this.toggleEdit}
-          onFilter={this.onFilter}
-          clearCompleted={this.clearCompleted}
-          startTimer={this.startTimer}
-          pauseTimer={this.pauseTimer}
-          countActive={this.state.todos.filter((i) => !i.completed).length}
-        />
-      </section>
-    );
-  }
+  return (
+    <section className="todoapp">
+      <Header onAdd={onAdd} />
+      <Main
+        todosData={todos}
+        filtering={filter}
+        onDelete={onDelete}
+        onComplete={onComplete}
+        onEdit={onEdit}
+        toggleEdit={toggleEdit}
+        onFilter={onFilter}
+        clearCompleted={clearCompleted}
+        startTimer={startTimer}
+        pauseTimer={pauseTimer}
+        countActive={todoItems.filter((i) => !i.completed).length}
+      />
+    </section>
+  );
 }

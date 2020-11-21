@@ -1,36 +1,28 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import Filter from '../../shared/filter';
 
-class Filters extends Component {
-  static defaultProps = {
-    filtering: Filter.all.name,
+export default function Filters({ filtering, onFilter }) {
+  const onClick = (evt) => {
+    onFilter(evt.target.textContent);
   };
 
-  static propTypes = {
-    onFilter: PropTypes.func.isRequired,
-    filtering: PropTypes.string,
-  };
+  const filterElements = Object.keys(Filter).map((item) => (
+    <li key={Filter[item].id}>
+      <button type="button" className={Filter[item].name === filtering ? 'selected' : ''} onClick={onClick}>
+        {Filter[item].name}
+      </button>
+    </li>
+  ));
 
-  onClick = (evt) => {
-    this.props.onFilter(evt.target.textContent);
-  };
-
-  render() {
-    const filterElements = Object.keys(Filter).map((item) => (
-      <li key={Filter[item].id}>
-        <button
-          type="button"
-          className={Filter[item].name === this.props.filtering ? 'selected' : ''}
-          onClick={this.onClick}
-        >
-          {Filter[item].name}
-        </button>
-      </li>
-    ));
-
-    return <ul className="filters">{filterElements}</ul>;
-  }
+  return <ul className="filters">{filterElements}</ul>;
 }
 
-export default Filters;
+Filters.defaultProps = {
+  filtering: Filter.all.name,
+};
+
+Filters.propTypes = {
+  onFilter: PropTypes.func.isRequired,
+  filtering: PropTypes.string,
+};

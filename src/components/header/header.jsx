@@ -1,84 +1,64 @@
 /* eslint-disable jsx-a11y/no-autofocus */
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import './header.css';
 import PropTypes from 'prop-types';
 
-class Header extends Component {
-  static propTypes = {
-    onAdd: PropTypes.func.isRequired,
+export default function Header({ onAdd }) {
+  const [inputText, setInputText] = useState('');
+  const [timeMin, setTimeMin] = useState('');
+  const [timeSec, setTimeSec] = useState('');
+
+  const onChangeInputText = (evt) => {
+    setInputText(evt.target.value);
   };
 
-  state = {
-    inputText: '',
-    inputMin: '',
-    inputSec: '',
+  const onChangeInputMin = (evt) => {
+    setTimeMin(evt.target.value);
   };
 
-  onChangeInputText = (evt) => {
-    this.setState({
-      inputText: evt.target.value,
-    });
+  const onChangeInputSec = (evt) => {
+    setTimeSec(evt.target.value);
   };
 
-  onChangeInputMin = (evt) => {
-    this.setState({
-      inputMin: evt.target.value,
-    });
-  };
-
-  onChangeInputSec = (evt) => {
-    this.setState({
-      inputSec: evt.target.value,
-    });
-  };
-
-  onSubmit = (evt) => {
+  const onSubmit = (evt) => {
     evt.preventDefault();
-    if (!this.state.inputText) return;
-    const timer = +this.state.inputMin * 60 + +this.state.inputSec;
-    this.props.onAdd(this.state.inputText, timer);
-    this.setState({
-      inputText: '',
-      inputMin: '',
-      inputSec: '',
-    });
+    if (!inputText) return;
+    const timer = +timeMin * 60 + +timeSec;
+    onAdd(inputText, timer);
+    setInputText('');
+    setTimeMin('');
+    setTimeSec('');
   };
 
-  render() {
-    return (
-      <header className="header">
-        <h1>todos</h1>
-        <form className="new-todo-form" onSubmit={this.onSubmit}>
-          <input
-            className="new-todo"
-            placeholder="Task"
-            onChange={this.onChangeInputText}
-            value={this.state.inputText}
-            autoFocus
-          />
-          <input
-            className="new-todo-form__timer"
-            placeholder="Min"
-            type="number"
-            onChange={this.onChangeInputMin}
-            value={this.state.inputMin}
-            max="59"
-            required
-          />
-          <input
-            className="new-todo-form__timer"
-            placeholder="Sec"
-            type="number"
-            max="59"
-            onChange={this.onChangeInputSec}
-            value={this.state.inputSec}
-            required
-          />
-          <input type="submit" style={{ visibility: 'hidden' }} />
-        </form>
-      </header>
-    );
-  }
+  return (
+    <header className="header">
+      <h1>todos</h1>
+      <form className="new-todo-form" onSubmit={onSubmit}>
+        <input className="new-todo" placeholder="Task" onChange={onChangeInputText} value={inputText} autoFocus />
+        <input
+          className="new-todo-form__timer"
+          placeholder="Min"
+          type="number"
+          onChange={onChangeInputMin}
+          value={timeMin}
+          max="59"
+          required
+        />
+        <input
+          className="new-todo-form__timer"
+          placeholder="Sec"
+          type="number"
+          max="59"
+          onChange={onChangeInputSec}
+          value={timeSec}
+          required
+        />
+        <input type="submit" style={{ visibility: 'hidden' }} />
+      </form>
+    </header>
+  );
 }
 
-export default Header;
+Header.propTypes = {
+  onAdd: PropTypes.func.isRequired,
+};

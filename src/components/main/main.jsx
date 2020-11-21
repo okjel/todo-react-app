@@ -1,42 +1,36 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import TodoList from '../todo-list';
 import Footer from '../footer';
 
-class Main extends Component {
-  state = {};
-
-  render() {
-    const {
-      todosData,
-      onDelete,
-      onComplete,
-      onEdit,
-      toggleEdit,
-      filtering,
-      onFilter,
-      clearCompleted,
-      startTimer,
-      pauseTimer,
-      countActive,
-    } = this.props;
-
-    return (
-      <section className="main">
-        <TodoList
-          todosData={todosData}
-          onDelete={onDelete}
-          onComplete={onComplete}
-          onEdit={onEdit}
-          toggleEdit={toggleEdit}
-          startTimer={startTimer}
-          pauseTimer={pauseTimer}
-        />
-        <Footer filtering={filtering} onFilter={onFilter} clearCompleted={clearCompleted} countActive={countActive} />
-      </section>
-    );
-  }
+export default function Main({
+  todosData,
+  onDelete,
+  onComplete,
+  onEdit,
+  toggleEdit,
+  filtering,
+  onFilter,
+  clearCompleted,
+  startTimer,
+  pauseTimer,
+  countActive,
+}) {
+  return (
+    <section className="main">
+      <TodoList
+        todosData={todosData}
+        onDelete={onDelete}
+        onComplete={onComplete}
+        onEdit={onEdit}
+        toggleEdit={toggleEdit}
+        startTimer={startTimer}
+        pauseTimer={pauseTimer}
+      />
+      <Footer filtering={filtering} onFilter={onFilter} clearCompleted={clearCompleted} countActive={countActive} />
+    </section>
+  );
 }
 
 Main.propTypes = {
@@ -64,5 +58,3 @@ Main.propTypes = {
   startTimer: PropTypes.func.isRequired,
   pauseTimer: PropTypes.func.isRequired,
 };
-
-export default Main;
